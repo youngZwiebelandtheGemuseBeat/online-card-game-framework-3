@@ -1,5 +1,6 @@
 // server.js
 
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -21,7 +22,7 @@ app.use(cors());
 const rooms = {};
 const playersInLobby = new Set();
 
-const MAX_PLAYERS = 3;
+const MAX_PLAYERS = parseInt(process.env.MAX_PLAYERS, 10) || 3;
 
 io.on('connection', (socket) => {
   console.log('A player connected:', socket.id);
