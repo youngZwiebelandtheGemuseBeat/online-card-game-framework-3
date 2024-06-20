@@ -1,7 +1,7 @@
 // client/client.js
 
 let socket;
-let playerName = '';
+let playerName = sessionStorage.getItem('playerName') || '';
 let roomName = '';
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -9,8 +9,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const disconnectButton = document.getElementById('disconnect-button');
   const roomListContainer = document.getElementById('room-list');
 
-  // Ask for player name when the page loads
-  askForPlayerName();
+  // Ask for player name if not already stored
+  if (!playerName) {
+    askForPlayerName();
+  } else {
+    initializeSocket();
+    socket.emit('playerName', playerName);
+  }
 
   createRoomButton.addEventListener('click', () => {
     roomName = prompt("Enter the room name:");
@@ -55,16 +60,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (socket) {
       socket.disconnect();
       socket = null;
-      askForPlayerName(); // Re-ask for player name after disconnecting
+      document.getElementById('lobby').style.display = 'block';
+      document.getElementById('game').style.display = 'none';
+      roomName = '';
+      initializeSocket();
+      socket.emit('playerName', playerName); // Re-emit player name to update lobby info
     }
-    document.getElementById('lobby').style.display = 'block';
-    document.getElementById('game').style.display = 'none';
-    roomName = '';
   });
 
   function askForPlayerName() {
     playerName = prompt("Enter your player name:");
     if (playerName) {
+      sessionStorage.setItem('playerName', playerName);
       initializeSocket();
       socket.emit('playerName', playerName);
     } else {
