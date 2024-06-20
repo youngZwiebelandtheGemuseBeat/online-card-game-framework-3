@@ -1,0 +1,13 @@
+/* client/styles.css */
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+#game-container {
+  margin: 20px;
+}
+
+#player-list {
+  margin: 20px;
+}
