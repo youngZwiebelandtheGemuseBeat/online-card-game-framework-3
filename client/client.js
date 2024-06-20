@@ -37,12 +37,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.target.classList.contains('room-item')) {
       roomName = event.target.getAttribute('data-room-name');
       const isFull = event.target.getAttribute('data-is-full') === 'true';
+      const hasPassword = event.target.getAttribute('data-has-password') === 'true';
       if (isFull) {
         alert('Room is full');
         return;
       }
-      const password = prompt("Enter the room password (if any):");
-      if (roomName !== null && password !== null) {
+      let password = '';
+      if (hasPassword) {
+        password = prompt("Enter the room password (if any):");
+      }
+      if (roomName !== null && (password !== null || !hasPassword)) {
         socket.emit('joinRoom', { roomName, password });
 
         socket.on('joinRoom', (response) => {
@@ -65,6 +69,12 @@ document.addEventListener("DOMContentLoaded", () => {
       roomName = '';
       initializeSocket();
       socket.emit('playerName', playerName); // Re-emit player name to update lobby info
+    }
+  });
+
+  window.addEventListener('beforeunload', () => {
+    if (socket) {
+      socket.disconnect();
     }
   });
 
@@ -126,6 +136,7 @@ function updateLobbyInfo(lobbyInfo) {
     roomItem.textContent = room.name + (room.isFull ? ' (Full)' : '');
     roomItem.setAttribute('data-room-name', room.name);
     roomItem.setAttribute('data-is-full', room.isFull);
+    roomItem.setAttribute('data-has-password', !!room.password);
     const roomPlayers = document.createElement('div');
     roomPlayers.textContent = `Players: ${room.players.join(', ')}`;
     roomListContainer.appendChild(roomItem);

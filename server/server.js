@@ -123,7 +123,8 @@ io.on('connection', (socket) => {
       rooms: Object.keys(rooms).map(roomName => ({
         name: roomName,
         players: rooms[roomName].players.map(player => player.name),
-        isFull: rooms[roomName].players.length >= MAX_PLAYERS
+        isFull: rooms[roomName].players.length >= MAX_PLAYERS,
+        password: rooms[roomName].password
       }))
     };
     io.emit('lobbyInfo', lobbyInfo);
