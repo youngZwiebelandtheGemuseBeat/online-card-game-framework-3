@@ -12,7 +12,10 @@
   - [ ] find an elegant font
 - [ ] add a simple chat
 - [ ] implement a first game (maybe try a simple & short logic but maybe more players or even an individual player number just for learning and testing purposes - could come in handy later on)
+  - [ ] add CPU players
+  - [ ] with CPU players implemented offline/alone playability is guaranteed too
 - [ ] handle potential connection/disconnection/timeout issues
+  - [ ] last resort = CPU player taking a disconnected (offline too long?) player's seat
 - [ ] online test on a proper server
 - [ ] release a first simple game on a proper server
 - [ ] release a first simple proper game as an app (~unlikely an iOS app)
