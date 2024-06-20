@@ -12,12 +12,14 @@
 <body>
   <h1>Online Card Game</h1>
   <div id="lobby">
-    <button id="join-button">Join Game</button>
+    <button id="create-room-button">Create Room</button>
+    <div id="room-list"></div>
   </div>
   <div id="game" style="display: none;">
+    <div id="room-name"></div>
     <div id="game-container"></div>
     <div id="player-list"></div>
-    <button id="disconnect-button">Disconnect</button>
+    <button id="disconnect-button">Leave Room</button>
   </div>
   <script src="client.js"></script>
 </body>

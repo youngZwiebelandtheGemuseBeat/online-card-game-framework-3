@@ -25,3 +25,14 @@ button {
 #game-container, #player-list {
   margin-top: 20px;
 }
+
+.room-item {
+  margin-top: 5px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+#player-list {
+  margin-top: 20px;
+}
