@@ -42,10 +42,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   roomListContainer.addEventListener('click', (event) => {
-    if (event.target.classList.contains('room-item')) {
-      roomName = event.target.getAttribute('data-room-name');
-      const isFull = event.target.getAttribute('data-is-full') === 'true';
-      const hasPassword = event.target.getAttribute('data-has-password') === 'true';
+    const roomItem = event.target.closest('.room-item');
+    if (roomItem) {
+      roomName = roomItem.getAttribute('data-room-name');
+      const isFull = roomItem.getAttribute('data-is-full') === 'true';
+      const hasPassword = roomItem.getAttribute('data-has-password') === 'true';
       if (isFull) {
         alert('Room is full');
         return;
@@ -150,10 +151,18 @@ function updateLobbyInfo(lobbyInfo) {
   lobbyInfo.rooms.forEach(room => {
     const roomItem = document.createElement('div');
     roomItem.classList.add('room-item');
-    roomItem.textContent = room.name + (room.isFull ? ' (Full)' : '');
     roomItem.setAttribute('data-room-name', room.name);
     roomItem.setAttribute('data-is-full', room.isFull);
     roomItem.setAttribute('data-has-password', !!room.password);
+
+    const roomDot = document.createElement('span');
+    roomDot.classList.add('dot', room.isFull ? 'red' : 'green');
+    roomItem.appendChild(roomDot);
+
+    const roomNameText = document.createElement('span');
+    roomNameText.textContent = room.name + (room.isFull ? ' (Full)' : '');
+    roomItem.appendChild(roomNameText);
+
     const roomPlayers = document.createElement('div');
     roomPlayers.textContent = `Players: ${room.players.join(', ')}`;
     roomListContainer.appendChild(roomItem);
