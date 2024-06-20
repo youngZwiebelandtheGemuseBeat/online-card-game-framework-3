@@ -1,35 +1,51 @@
 // client/client.js
 
-const socket = io('http://localhost:3000');
+let socket;
+let playerName = '';
 
-const playerName = prompt("Enter your player name:");
+document.addEventListener("DOMContentLoaded", () => {
+  const joinButton = document.getElementById('join-button');
+  const disconnectButton = document.getElementById('disconnect-button');
 
-socket.emit('joinGame', playerName);
+  joinButton.addEventListener('click', () => {
+    playerName = prompt("Enter your player name:");
+    if (playerName) {
+      socket = io('http://localhost:3000');
 
-// Listen for game updates from the server
-socket.on('gameUpdate', (gameState) => {
-  // Update the UI with the updated game state
-  updateGameUI(gameState);
+      socket.emit('joinGame', playerName);
+      document.getElementById('lobby').style.display = 'none';
+      document.getElementById('game').style.display = 'block';
+
+      socket.on('gameUpdate', (gameState) => {
+        updateGameUI(gameState);
+      });
+
+      socket.on('playerList', (players) => {
+        updatePlayerList(players);
+      });
+    }
+  });
+
+  disconnectButton.addEventListener('click', () => {
+    if (socket) {
+      socket.disconnect();
+      socket = null;
+    }
+    document.getElementById('lobby').style.display = 'block';
+    document.getElementById('game').style.display = 'none';
+  });
 });
 
-// Listen for the updated player list
-socket.on('playerList', (players) => {
-  // Update the UI with the updated player list
-  updatePlayerList(players);
-});
-
-// Handle player actions
 function makeMove(card) {
-  // Send the chosen card to the server for validation
-  socket.emit('makeMove', card);
+  if (socket) {
+    socket.emit('makeMove', card);
+  }
 }
 
 function updateGameUI(gameState) {
-  // Implement your UI update logic here
   console.log('Game state updated:', gameState);
 }
 
 function updatePlayerList(players) {
-  // Implement your UI update logic here
   console.log('Player list updated:', players);
 }

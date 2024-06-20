@@ -40,6 +40,9 @@ io.on('connection', (socket) => {
 
     // Broadcast the updated player list to all clients
     io.emit('playerList', players);
+
+    // Log the number of connected players
+    logConnectedPlayers();
   });
 
   // Handle player making a move
@@ -60,6 +63,7 @@ io.on('connection', (socket) => {
       io.emit('playerList', players);
     }
     console.log('A player disconnected:', socket.id);
+    logConnectedPlayers();
   });
 });
 
@@ -67,3 +71,8 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// Function to log the number of connected players
+function logConnectedPlayers() {
+  console.log(`Number of connected players: ${players.length}`);
+}

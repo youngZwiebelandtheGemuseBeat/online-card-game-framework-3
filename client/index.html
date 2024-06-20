@@ -11,8 +11,14 @@
 </head>
 <body>
   <h1>Online Card Game</h1>
-  <div id="game-container"></div>
-  <div id="player-list"></div>
+  <div id="lobby">
+    <button id="join-button">Join Game</button>
+  </div>
+  <div id="game" style="display: none;">
+    <div id="game-container"></div>
+    <div id="player-list"></div>
+    <button id="disconnect-button">Disconnect</button>
+  </div>
   <script src="client.js"></script>
 </body>
 </html>
