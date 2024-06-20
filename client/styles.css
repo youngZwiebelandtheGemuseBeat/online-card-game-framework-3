@@ -10,7 +10,7 @@ body {
   margin: 0;
 }
 
-#lobby, #game {
+#welcome, #lobby, #game {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -19,6 +19,12 @@ body {
 button {
   margin-top: 10px;
   padding: 10px 20px;
+  font-size: 16px;
+}
+
+#player-name-input {
+  margin-top: 10px;
+  padding: 10px;
   font-size: 16px;
 }
 

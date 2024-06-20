@@ -5,17 +5,25 @@ let playerName = sessionStorage.getItem('playerName') || '';
 let roomName = '';
 
 document.addEventListener("DOMContentLoaded", () => {
+  const enterLobbyButton = document.getElementById('enter-lobby-button');
+  const playerNameInput = document.getElementById('player-name-input');
   const createRoomButton = document.getElementById('create-room-button');
   const disconnectButton = document.getElementById('disconnect-button');
   const roomListContainer = document.getElementById('room-list');
 
-  // Ask for player name if not already stored
+  // Show welcome page if playerName is not already set
   if (!playerName) {
-    askForPlayerName();
+    document.getElementById('welcome').style.display = 'block';
   } else {
-    initializeSocket();
-    socket.emit('playerName', playerName);
+    enterLobby();
   }
+
+  enterLobbyButton.addEventListener('click', enterLobbyHandler);
+  playerNameInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      enterLobbyHandler();
+    }
+  });
 
   createRoomButton.addEventListener('click', () => {
     roomName = prompt("Enter the room name:");
@@ -66,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
       socket = null;
       document.getElementById('lobby').style.display = 'block';
       document.getElementById('game').style.display = 'none';
+      document.querySelector('#lobby h1').textContent = 'Lobby';
       roomName = '';
       initializeSocket();
       socket.emit('playerName', playerName); // Re-emit player name to update lobby info
@@ -78,21 +87,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  function askForPlayerName() {
-    playerName = prompt("Enter your player name:");
+  function enterLobbyHandler() {
+    playerName = playerNameInput.value.trim();
     if (playerName) {
       sessionStorage.setItem('playerName', playerName);
-      initializeSocket();
-      socket.emit('playerName', playerName);
+      enterLobby();
     } else {
-      askForPlayerName(); // Keep asking until a name is provided
+      alert('Please enter your name.');
     }
+  }
+
+  function enterLobby() {
+    document.getElementById('welcome').style.display = 'none';
+    document.getElementById('lobby').style.display = 'block';
+    initializeSocket();
+    socket.emit('playerName', playerName);
   }
 
   function joinRoom(roomName) {
     document.getElementById('lobby').style.display = 'none';
     document.getElementById('game').style.display = 'block';
-    document.getElementById('room-name').textContent = `Room: ${roomName}`;
+    document.getElementById('room-name-header').textContent = `Room: ${roomName}`;
 
     socket.on('gameUpdate', (gameState) => {
       updateGameUI(gameState);
