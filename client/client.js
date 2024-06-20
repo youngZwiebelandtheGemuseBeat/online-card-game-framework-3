@@ -120,7 +120,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function initializeSocket() {
     if (!socket) {
-      socket = io('http://localhost:3000');
+      const serverIp = '192.168.31.128'; // Replace with your server IP address
+      socket = io(`http://${serverIp}:3000`);
       socket.on('lobbyInfo', (lobbyInfo) => {
         updateLobbyInfo(lobbyInfo);
       });
@@ -129,7 +130,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function fetchRoomList() {
     // Temporary socket connection to fetch room list
-    const tempSocket = io('http://localhost:3000');
+    const serverIp = '192.168.31.128'; // Replace with your server IP address
+    const tempSocket = io(`http://${serverIp}:3000`);
     tempSocket.on('lobbyInfo', (lobbyInfo) => {
       updateLobbyInfo(lobbyInfo);
       tempSocket.disconnect(); // Disconnect after fetching the lobby info
