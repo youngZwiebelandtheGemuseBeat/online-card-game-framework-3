@@ -30,7 +30,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   roomListContainer.addEventListener('click', (event) => {
     if (event.target.classList.contains('room-item')) {
-      roomName = event.target.textContent;
+      roomName = event.target.getAttribute('data-room-name');
+      const isFull = event.target.getAttribute('data-is-full') === 'true';
+      if (isFull) {
+        alert('Room is full');
+        return;
+      }
       const password = prompt("Enter the room password (if any):");
       if (roomName !== null && password !== null) {
         socket.emit('joinRoom', { roomName, password });
@@ -112,6 +117,8 @@ function updateLobbyInfo(lobbyInfo) {
     const roomItem = document.createElement('div');
     roomItem.classList.add('room-item');
     roomItem.textContent = room.name + (room.isFull ? ' (Full)' : '');
+    roomItem.setAttribute('data-room-name', room.name);
+    roomItem.setAttribute('data-is-full', room.isFull);
     const roomPlayers = document.createElement('div');
     roomPlayers.textContent = `Players: ${room.players.join(', ')}`;
     roomListContainer.appendChild(roomItem);
