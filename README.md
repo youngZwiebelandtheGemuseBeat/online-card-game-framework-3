@@ -39,4 +39,4 @@ npm start
 start client ```
 npm run client
 ```
-### Possibly some additional dependencies are necessary but ```npm```'s output will hopefully provide insight.
+### Possibly some additional dependencies are necessary but ```npm``` 's output will hopefully provide insight.
