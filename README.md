@@ -39,9 +39,3 @@ start client
 ```
 npm run client
 ```
-
-
-
-
-
-
