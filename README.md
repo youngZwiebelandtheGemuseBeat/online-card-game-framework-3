@@ -29,14 +29,8 @@ Installing ```node``` and ```npm``` via *brew*, *nvm*, *docker*, etc. will provi
 ## Usage
 two terminals in root directory
 ### terminal 1
-update all scripts ```
-npm install
-```
-start server ```
-npm start
-```
+update all scripts ```npm install```
+start server ```npm start```
 ### terminal 2
-start client ```
-npm run client
-```
+start client ```npm run client```
 ### Possibly some additional dependencies are necessary but ```npm``` 's output will hopefully provide insight.
