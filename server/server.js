@@ -1,5 +1,3 @@
-// server.js
-
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
@@ -39,7 +37,8 @@ io.on('connection', (socket) => {
       rooms[roomName] = {
         players: [],
         password: password,
-        gameState: {}
+        gameState: {},
+        messages: [] // Add messages array to each room
       };
       console.log(`Room created: ${roomName}`);
       socket.emit('roomCreated', { success: true, roomName });
@@ -111,7 +110,7 @@ io.on('connection', (socket) => {
     room.players.push(player);
     socket.join(roomName);
     playersInLobby.delete(playerName);
-    socket.emit('joinRoom', { success: true, roomName });
+    socket.emit('joinRoom', { success: true, roomName, messages: room.messages });
     io.to(roomName).emit('playerList', room.players);
     console.log(`Player ${playerName} joined room: ${roomName}`);
     broadcastLobbyInfo();
@@ -130,6 +129,22 @@ io.on('connection', (socket) => {
     };
     io.emit('lobbyInfo', lobbyInfo);
   }
+
+  // Handle receiving a message
+  socket.on('sendMessage', ({ roomName, message }) => {
+    const room = rooms[roomName];
+    if (room) {
+      const chatMessage = { user: socket.playerName, text: message };
+      room.messages.push(chatMessage);
+
+      // Keep only the last 10 messages
+      if (room.messages.length > 10) {
+        room.messages.shift();
+      }
+
+      io.to(roomName).emit('message', chatMessage);
+    }
+  });
 });
 
 const PORT = process.env.PORT || 3000;

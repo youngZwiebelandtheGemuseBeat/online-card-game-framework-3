@@ -11,6 +11,47 @@ document.addEventListener("DOMContentLoaded", () => {
   const disconnectButton = document.getElementById('disconnect-button');
   const roomListContainer = document.getElementById('room-list');
 
+  // Chat elements
+  const chatBoxWrapper = document.createElement('div');
+  chatBoxWrapper.className = 'chatBoxWrapper';
+  chatBoxWrapper.style.display = 'none'; // Initially hidden
+  document.body.appendChild(chatBoxWrapper);
+
+  const chatBox = document.createElement('div');
+  chatBox.className = 'chat-box';
+  chatBoxWrapper.appendChild(chatBox);
+
+  const chatHead = document.createElement('div');
+  chatHead.className = 'chat-head';
+  chatBox.appendChild(chatHead);
+
+  const chatTitle = document.createElement('h2');
+  chatTitle.textContent = 'Chat Box';
+  chatHead.appendChild(chatTitle);
+
+  const toggleChatBox = document.createElement('span');
+  toggleChatBox.className = 'material-icons';
+  toggleChatBox.textContent = 'keyboard_arrow_up';
+  chatHead.appendChild(toggleChatBox);
+
+  const chatBody = document.createElement('div');
+  chatBody.className = 'chat-body';
+  chatBody.style.display = 'none'; // Initially hidden
+  chatBox.appendChild(chatBody);
+
+  const msgInsert = document.createElement('div');
+  msgInsert.className = 'msg-insert';
+  chatBody.appendChild(msgInsert);
+
+  const chatText = document.createElement('div');
+  chatText.className = 'chat-text';
+  chatBox.appendChild(chatText);
+
+  const chatInput = document.createElement('input');
+  chatInput.type = 'text';
+  chatInput.placeholder = 'Type a message...';
+  chatText.appendChild(chatInput);
+
   // Show welcome page if playerName is not already set
   if (!playerName) {
     document.getElementById('welcome').style.display = 'block';
@@ -61,6 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
         socket.on('joinRoom', (response) => {
           if (response.success) {
             joinRoom(response.roomName);
+            response.messages.forEach(message => {
+              appendMessage(message);
+            });
           } else {
             alert(response.message);
           }
@@ -75,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
       socket = null;
       document.getElementById('lobby').style.display = 'block';
       document.getElementById('game').style.display = 'none';
-      document.querySelector('#lobby h1').textContent = 'Lobby';
+      chatBoxWrapper.style.display = 'none'; // Hide chat box
       roomName = '';
       initializeSocket();
       socket.emit('playerName', playerName); // Re-emit player name to update lobby info
@@ -109,6 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('lobby').style.display = 'none';
     document.getElementById('game').style.display = 'block';
     document.getElementById('room-name-header').textContent = `Room: ${roomName}`;
+    chatBoxWrapper.style.display = 'block'; // Show chat box
 
     socket.on('gameUpdate', (gameState) => {
       updateGameUI(gameState);
@@ -117,11 +162,15 @@ document.addEventListener("DOMContentLoaded", () => {
     socket.on('playerList', (players) => {
       updatePlayerList(players);
     });
+
+    socket.on('message', (message) => {
+      appendMessage(message);
+    });
   }
 
   function initializeSocket() {
     if (!socket) {
-      const serverIp = '192.168.31.128'; // Replace with current server IP address
+      const serverIp = '129.27.35.84'; // Replace with current server IP address
       socket = io(`http://${serverIp}:3000`);
       socket.on('lobbyInfo', (lobbyInfo) => {
         updateLobbyInfo(lobbyInfo);
@@ -131,13 +180,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function fetchRoomList() {
     // Temporary socket connection to fetch room list
-    const serverIp = '192.168.31.128'; // Replace with current server IP address
+    const serverIp = '129.27.35.84'; // Replace with current server IP address
     const tempSocket = io(`http://${serverIp}:3000`);
     tempSocket.on('lobbyInfo', (lobbyInfo) => {
       updateLobbyInfo(lobbyInfo);
       tempSocket.disconnect(); // Disconnect after fetching the lobby info
     });
   }
+
+  function appendMessage(message) {
+    const msgElement = document.createElement('div');
+    msgElement.className = message.user === playerName ? 'msg-send' : 'msg-receive';
+    msgElement.textContent = `${message.user}: ${message.text}`;
+    msgInsert.appendChild(msgElement);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  chatHead.addEventListener('click', () => {
+    if (chatBody.style.display === 'none') {
+      chatBody.style.display = 'block';
+      toggleChatBox.textContent = 'keyboard_arrow_down';
+      chatText.style.display = 'block'; // Show input when open
+    } else {
+      chatBody.style.display = 'none';
+      toggleChatBox.textContent = 'keyboard_arrow_up';
+      chatText.style.display = 'none'; // Hide input when closed
+    }
+  });
+
+  chatInput.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if (chatInput.value) {
+        socket.emit('sendMessage', { roomName, message: chatInput.value });
+        chatInput.value = '';
+      }
+    }
+  });
 });
 
 function updateLobbyInfo(lobbyInfo) {

@@ -67,3 +67,67 @@ button {
 #player-list {
   margin-top: 20px;
 }
+
+/* Chat box styles */
+.chatBoxWrapper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+}
+
+.chat-box {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.chat-head {
+  background-color: #f0f0f0;
+  max-height: 20px;
+  padding: 10px; /* Adjust padding to decrease height */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.chat-body {
+  max-height: 150px;
+  overflow-y: auto;
+  display: none; /* Initially hidden */
+}
+
+.msg-insert {
+  padding: 10px;
+}
+
+.msg-send {
+  background-color: #dcf8c6;
+  padding: 5px 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  text-align: right;
+}
+
+.msg-receive {
+  background-color: #ebebeb;
+  padding: 5px 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  text-align: left;
+}
+
+.chat-text {
+  padding: 10px;
+  display: none; /* Initially hidden */
+}
+
+.chat-text input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box; /* Ensure the input stays within the chat box */
+}
