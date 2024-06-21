@@ -20,6 +20,8 @@
 - [ ] release a first simple game on a proper server
 - [ ] release a first simple proper game as an app (~unlikely an iOS app)
 - [ ] develop card games that do not exist yet
+- [ ] **maybe** add Facebook/Google SDK for login
+  - [ ] this could **maybe** contribute to sonething like an "Ewige Schrift"
 
 ## Usage
 two terminals in root directory
