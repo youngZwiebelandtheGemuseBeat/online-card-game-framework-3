@@ -33,4 +33,4 @@ update all scripts ```npm install```
 start server ```npm start```
 ### terminal 2
 start client ```npm run client```
-### Possibly some additional dependencies are necessary but ```npm``` 's output will hopefully provide insight.
+### Possibly some additional dependencies are necessary but ```npm```'s output will hopefully provide enough insight for anyome to get this baby boilin'.
