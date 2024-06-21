@@ -8,7 +8,7 @@ body {
   justify-content: center;
   height: 100vh;
   margin: 0;
-  background-image: url('public/src/assets/backgrounds/background4.png');
+  background-image: url('src/assets/backgrounds/background4.png');
   background-size: cover;
   background-position: center;
 }
