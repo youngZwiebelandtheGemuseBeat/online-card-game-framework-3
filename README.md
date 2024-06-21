@@ -23,19 +23,20 @@
 - [ ] **maybe** add Facebook/Google SDK for login
   - [ ] this could **maybe** contribute to sonething like an "Ewige Schrift"
 
+## Dependencies/Includes
+Installing ```node``` and ```npm``` via *brew*, *nvm*, *docker*, etc. will provide a proper start into trying out this framework, I assume.
+
 ## Usage
 two terminals in root directory
 ### terminal 1
-update all scripts
-```
+update all scripts ```
 npm install
 ```
-start server
-```
+start server ```
 npm start
 ```
 ### terminal 2
-start client
-```
+start client ```
 npm run client
 ```
+### Possibly some additional dependencies are necessary but ```npm```'s output will hopefully provide insight.
