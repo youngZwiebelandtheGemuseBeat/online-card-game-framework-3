@@ -1,5 +1,3 @@
-// client/client.js
-
 let socket;
 let playerName = sessionStorage.getItem('playerName') || '';
 let roomName = '';
@@ -114,6 +112,21 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   disconnectButton.addEventListener('click', () => {
+    const confirmation = confirm('Are you sure you want to leave the room?');
+    if (confirmation) {
+      leaveRoom();
+    }
+  });
+
+  window.addEventListener('beforeunload', (event) => {
+    if (socket && roomName) {
+      const confirmationMessage = 'Are you sure you want to leave the game?';
+      event.returnValue = confirmationMessage; // Standard for most browsers
+      return confirmationMessage; // For some older browsers
+    }
+  });
+
+  function leaveRoom() {
     if (socket) {
       socket.disconnect();
       socket = null;
@@ -124,13 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
       initializeSocket();
       socket.emit('playerName', playerName); // Re-emit player name to update lobby info
     }
-  });
-
-  window.addEventListener('beforeunload', () => {
-    if (socket) {
-      socket.disconnect();
-    }
-  });
+  }
 
   function enterLobbyHandler() {
     playerName = playerNameInput.value.trim();
@@ -170,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function initializeSocket() {
     if (!socket) {
-      const serverIp = '129.27.35.84'; // Replace with current server IP address
+      const serverIp = '192.168.5.101'; // Replace with current server IP address
       socket = io(`http://${serverIp}:3000`);
       socket.on('lobbyInfo', (lobbyInfo) => {
         updateLobbyInfo(lobbyInfo);
@@ -180,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function fetchRoomList() {
     // Temporary socket connection to fetch room list
-    const serverIp = '129.27.35.84'; // Replace with current server IP address
+    const serverIp = '192.168.5.101'; // Replace with current server IP address
     const tempSocket = io(`http://${serverIp}:3000`);
     tempSocket.on('lobbyInfo', (lobbyInfo) => {
       updateLobbyInfo(lobbyInfo);
