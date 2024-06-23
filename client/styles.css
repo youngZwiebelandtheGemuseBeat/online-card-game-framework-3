@@ -1,5 +1,3 @@
-/* client/styles.css */
-
 body {
   font-family: Arial, sans-serif;
   display: flex;
@@ -13,13 +11,25 @@ body {
   background-position: center;
 }
 
-#welcome, #lobby, #game {
+#welcome, #lobby {
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: rgba(255, 255, 255, 0.8);
   padding: 20px;
   border-radius: 10px;
+}
+
+#game {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align items to the start (left) */
+  /* background-color: rgba(255, 255, 255, 0.8); */
+  padding: 10px; /* Reduced padding */
+  border-radius: 10px;
+  position: absolute; /* Positioned absolutely */
+  top: -10px; /* Distance from the top */
+  left: 20px; /* Distance from the left */
 }
 
 button {
@@ -36,7 +46,7 @@ button {
 }
 
 #game-container, #player-list {
-  margin-top: 20px;
+  margin-top: 10px; /* Reduced margin */
 }
 
 .room-item {
@@ -65,7 +75,7 @@ button {
 }
 
 #player-list {
-  margin-top: 20px;
+  margin-top: 10px; /* Reduced margin */
 }
 
 /* Chat box styles */
@@ -77,14 +87,14 @@ button {
 }
 
 .chat-box {
-  background-color: /* white; */ rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.8);
   border: 1px solid #ccc;
   border-radius: 5px;
   overflow: hidden;
 }
 
 .chat-head {
-  background-color: /* #f0f0f0; */ rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.8);
   max-height: 20px;
   padding: 10px; /* Adjust padding to decrease height */
   display: flex;

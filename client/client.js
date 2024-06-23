@@ -159,7 +159,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function joinRoom(roomName) {
     document.getElementById('lobby').style.display = 'none';
     document.getElementById('game').style.display = 'block';
-    document.getElementById('room-name-header').textContent = `Room: ${roomName}`;
+    // document.getElementById('room-name-header').textContent = `Room: ${roomName}`;
+    // document.getElementById('room-name-header').textContent = `${roomName}`;
     chatBoxWrapper.style.display = 'block'; // Show chat box
 
     socket.on('gameUpdate', (gameState) => {
