@@ -5,8 +5,7 @@
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
-    "client": "live-server --config=live-server.config.js",
-    "build-client": "cd client && npm install && npm run build"
+    "client": "live-server --config=live-server.config.js"
   },
   "dependencies": {
     "cluster": "^0.7.7",
