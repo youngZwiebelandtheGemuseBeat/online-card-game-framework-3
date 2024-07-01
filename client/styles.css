@@ -28,8 +28,8 @@ body {
   padding: 10px; /* Reduced padding */
   border-radius: 10px;
   position: absolute; /* Positioned absolutely */
-  top: -10px; /* Distance from the top */
-  left: 20px; /* Distance from the left */
+  top: 10px; /* Distance from the top */
+  left: 10px; /* Distance from the left */
 }
 
 button {
@@ -132,6 +132,8 @@ button {
 .chat-text {
   padding: 10px;
   display: none; /* Initially hidden */
+  display: flex; /* Display flex for input and button alignment */
+  align-items: center;
 }
 
 .chat-text input {
@@ -140,4 +142,11 @@ button {
   border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box; /* Ensure the input stays within the chat box */
+}
+
+.send-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 5px;
 }
