@@ -50,11 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
   chatInput.placeholder = 'Type a message...';
   chatText.appendChild(chatInput);
 
-  const sendButton = document.createElement('button');
-  sendButton.className = 'send-button';
-  sendButton.innerHTML = '<span class="material-icons">send</span>';
-  chatText.appendChild(sendButton);
-
   // Show welcome page if playerName is not already set
   if (!playerName) {
     document.getElementById('welcome').style.display = 'block';
@@ -66,13 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
   playerNameInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
       enterLobbyHandler();
-    }
-  });
-
-  sendButton.addEventListener('click', sendMessage);
-  chatInput.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter') {
-      sendMessage(event);
     }
   });
 
@@ -191,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function initializeSocket() {
     if (!socket) {
       const serverIp = '13.51.167.68'; // Replace with current server IP address
-      socket = io(`http://${serverIp}:80`);
+      socket = io(`http://${serverIp}`);
       socket.on('lobbyInfo', (lobbyInfo) => {
         updateLobbyInfo(lobbyInfo);
       });
@@ -201,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function fetchRoomList() {
     // Temporary socket connection to fetch room list
     const serverIp = '13.51.167.68'; // Replace with current server IP address
-    const tempSocket = io(`http://${serverIp}:80`);
+    const tempSocket = io(`http://${serverIp}`);
     tempSocket.on('lobbyInfo', (lobbyInfo) => {
       updateLobbyInfo(lobbyInfo);
       tempSocket.disconnect(); // Disconnect after fetching the lobby info
@@ -216,14 +204,6 @@ document.addEventListener("DOMContentLoaded", () => {
     chatBody.scrollTop = chatBody.scrollHeight;
   }
 
-  function sendMessage(event) {
-    event.preventDefault();
-    if (chatInput.value) {
-      socket.emit('sendMessage', { roomName, message: chatInput.value });
-      chatInput.value = '';
-    }
-  }
-
   chatHead.addEventListener('click', () => {
     if (chatBody.style.display === 'none') {
       chatBody.style.display = 'block';
@@ -233,6 +213,16 @@ document.addEventListener("DOMContentLoaded", () => {
       chatBody.style.display = 'none';
       toggleChatBox.textContent = 'keyboard_arrow_up';
       chatText.style.display = 'none'; // Hide input when closed
+    }
+  });
+
+  chatInput.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if (chatInput.value) {
+        socket.emit('sendMessage', { roomName, message: chatInput.value });
+        chatInput.value = '';
+      }
     }
   });
 });
