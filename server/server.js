@@ -3,7 +3,6 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
-const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
@@ -14,13 +13,8 @@ const io = socketIo(server, {
   }
 });
 
-// Use CORS middleware
 app.use(cors());
 
-// Serve static files from the client directory
-app.use(express.static(path.join(__dirname, '../client')));
-
-// Track rooms and players
 const rooms = {};
 const playersInLobby = new Set();
 
@@ -35,14 +29,13 @@ io.on('connection', (socket) => {
     broadcastLobbyInfo();
   });
 
-  // Handle room creation
   socket.on('createRoom', ({ roomName, password }) => {
     if (!rooms[roomName]) {
       rooms[roomName] = {
         players: [],
         password: password,
         gameState: {},
-        messages: [] // Add messages array to each room
+        messages: []
       };
       console.log(`Room created: ${roomName}`);
       socket.emit('roomCreated', { success: true, roomName });
@@ -52,7 +45,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle joining a room
   socket.on('joinRoom', ({ roomName, password }) => {
     const room = rooms[roomName];
     if (room) {
@@ -70,18 +62,13 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle player making a move
   socket.on('makeMove', ({ roomName, card }) => {
     const room = rooms[roomName];
     if (room) {
-      // Validate the move and update the game state accordingly
-
-      // Broadcast the updated game state to all players in the room
       io.to(roomName).emit('gameUpdate', room.gameState);
     }
   });
 
-  // Handle player disconnection
   socket.on('disconnect', () => {
     if (socket.playerName) {
       playersInLobby.delete(socket.playerName);
@@ -134,14 +121,12 @@ io.on('connection', (socket) => {
     io.emit('lobbyInfo', lobbyInfo);
   }
 
-  // Handle receiving a message
   socket.on('sendMessage', ({ roomName, message }) => {
     const room = rooms[roomName];
     if (room) {
       const chatMessage = { user: socket.playerName, text: message };
       room.messages.push(chatMessage);
 
-      // Keep only the last 10 messages
       if (room.messages.length > 10) {
         room.messages.shift();
       }
@@ -151,12 +136,11 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 3001;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// Function to log the status of rooms
 function logRoomStatus() {
   console.log(`Current rooms: ${JSON.stringify(rooms, null, 2)}`);
 }

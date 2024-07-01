@@ -9,10 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const disconnectButton = document.getElementById('disconnect-button');
   const roomListContainer = document.getElementById('room-list');
 
-  // Chat elements
   const chatBoxWrapper = document.createElement('div');
   chatBoxWrapper.className = 'chatBoxWrapper';
-  chatBoxWrapper.style.display = 'none'; // Initially hidden
+  chatBoxWrapper.style.display = 'none';
   document.body.appendChild(chatBoxWrapper);
 
   const chatBox = document.createElement('div');
@@ -34,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const chatBody = document.createElement('div');
   chatBody.className = 'chat-body';
-  chatBody.style.display = 'none'; // Initially hidden
+  chatBody.style.display = 'none';
   chatBox.appendChild(chatBody);
 
   const msgInsert = document.createElement('div');
@@ -50,7 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
   chatInput.placeholder = 'Type a message...';
   chatText.appendChild(chatInput);
 
-  // Show welcome page if playerName is not already set
   if (!playerName) {
     document.getElementById('welcome').style.display = 'block';
   } else {
@@ -121,8 +119,8 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener('beforeunload', (event) => {
     if (socket && roomName) {
       const confirmationMessage = 'Are you sure you want to leave the game?';
-      event.returnValue = confirmationMessage; // Standard for most browsers
-      return confirmationMessage; // For some older browsers
+      event.returnValue = confirmationMessage;
+      return confirmationMessage;
     }
   });
 
@@ -132,10 +130,10 @@ document.addEventListener("DOMContentLoaded", () => {
       socket = null;
       document.getElementById('lobby').style.display = 'block';
       document.getElementById('game').style.display = 'none';
-      chatBoxWrapper.style.display = 'none'; // Hide chat box
+      chatBoxWrapper.style.display = 'none';
       roomName = '';
       initializeSocket();
-      socket.emit('playerName', playerName); // Re-emit player name to update lobby info
+      socket.emit('playerName', playerName);
     }
   }
 
@@ -159,9 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function joinRoom(roomName) {
     document.getElementById('lobby').style.display = 'none';
     document.getElementById('game').style.display = 'block';
-    // document.getElementById('room-name-header').textContent = `Room: ${roomName}`;
-    // document.getElementById('room-name-header').textContent = `${roomName}`;
-    chatBoxWrapper.style.display = 'block'; // Show chat box
+    chatBoxWrapper.style.display = 'block';
 
     socket.on('gameUpdate', (gameState) => {
       updateGameUI(gameState);
@@ -178,8 +174,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function initializeSocket() {
     if (!socket) {
-      const serverIp = '13.51.167.68'; // Replace with current server IP address
-      socket = io(`http://${serverIp}`);
+      const serverIp = '13.51.167.68';
+      socket = io(`http://${serverIp}:3001`);
       socket.on('lobbyInfo', (lobbyInfo) => {
         updateLobbyInfo(lobbyInfo);
       });
@@ -187,12 +183,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function fetchRoomList() {
-    // Temporary socket connection to fetch room list
-    const serverIp = '13.51.167.68'; // Replace with current server IP address
-    const tempSocket = io(`http://${serverIp}`);
+    const serverIp = '13.51.167.68';
+    const tempSocket = io(`http://${serverIp}:3001`);
     tempSocket.on('lobbyInfo', (lobbyInfo) => {
       updateLobbyInfo(lobbyInfo);
-      tempSocket.disconnect(); // Disconnect after fetching the lobby info
+      tempSocket.disconnect();
     });
   }
 
@@ -208,11 +203,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (chatBody.style.display === 'none') {
       chatBody.style.display = 'block';
       toggleChatBox.textContent = 'keyboard_arrow_down';
-      chatText.style.display = 'block'; // Show input when open
+      chatText.style.display = 'block';
     } else {
       chatBody.style.display = 'none';
       toggleChatBox.textContent = 'keyboard_arrow_up';
-      chatText.style.display = 'none'; // Hide input when closed
+      chatText.style.display = 'none';
     }
   });
 
