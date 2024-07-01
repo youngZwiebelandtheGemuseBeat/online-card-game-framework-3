@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function initializeSocket() {
     if (!socket) {
-      const serverIp = '13.51.167.68';
+      const serverIp = '13.60.57.56';
       socket = io(`http://${serverIp}:3001`);
       socket.on('lobbyInfo', (lobbyInfo) => {
         updateLobbyInfo(lobbyInfo);
@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function fetchRoomList() {
-    const serverIp = '13.51.167.68';
+    const serverIp = '13.60.57.56';
     const tempSocket = io(`http://${serverIp}:3001`);
     tempSocket.on('lobbyInfo', (lobbyInfo) => {
       updateLobbyInfo(lobbyInfo);
