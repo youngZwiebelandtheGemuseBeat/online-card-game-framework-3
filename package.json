@@ -4,8 +4,9 @@
   "description": "Another try setting up a reusable online card game framework",
   "main": "server/server.js",
   "scripts": {
-    "start": "node server/server.js",
-    "client": "live-server client"
+    "start": "node checkPort.js",
+    "client": "live-server client --port=5001",
+    "dev": "concurrently \"npm run start\" \"npm run client\""
   },
   "dependencies": {
     "cluster": "^0.7.7",
@@ -21,7 +22,8 @@
     "sticky-session": "^0.1.0"
   },
   "devDependencies": {
-    "live-server": "^1.2.0"
+    "live-server": "^1.2.0",
+    "concurrently": "^7.0.0"
   },
   "author": "Luca Candussi",
   "license": "ISC"

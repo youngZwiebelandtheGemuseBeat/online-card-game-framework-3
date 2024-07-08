@@ -1,5 +1,3 @@
-/* client/styles.css */
-
 body {
   font-family: Arial, sans-serif;
   display: flex;
@@ -8,7 +6,7 @@ body {
   justify-content: center;
   height: 100vh;
   margin: 0;
-  background-image: url('src/assets/backgrounds/background4.png');
+  background-image: url('src/backgrounds/background4.png');
   background-size: cover;
   background-position: center;
 }
@@ -26,7 +24,7 @@ button {
   margin-top: 10px;
   padding: 10px 20px;
   font-size: 16px;
-  cursor: pointer; /* Ensure cursor style for buttons */
+  cursor: pointer;
 }
 
 #player-name-input {
@@ -43,7 +41,7 @@ button {
   margin-top: 5px;
   padding: 10px;
   background-color: #f0f0f0;
-  cursor: pointer; /* Ensure cursor style for room items */
+  cursor: pointer;
   display: flex;
   align-items: center;
 }
@@ -77,16 +75,15 @@ button {
 }
 
 .chat-box {
-  background-color: /* white; */ rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.8);
   border: 1px solid #ccc;
   border-radius: 5px;
   overflow: hidden;
 }
 
 .chat-head {
-  background-color: /* #f0f0f0; */ rgba(255, 255, 255, 0.8);
-  max-height: 20px;
-  padding: 10px; /* Adjust padding to decrease height */
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -96,7 +93,7 @@ button {
 .chat-body {
   max-height: 150px;
   overflow-y: auto;
-  display: none; /* Initially hidden */
+  display: none;
 }
 
 .msg-insert {
@@ -121,7 +118,7 @@ button {
 
 .chat-text {
   padding: 10px;
-  display: none; /* Initially hidden */
+  display: none;
 }
 
 .chat-text input {
@@ -129,5 +126,5 @@ button {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  box-sizing: border-box; /* Ensure the input stays within the chat box */
+  box-sizing: border-box;
 }
