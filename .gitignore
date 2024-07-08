@@ -52,3 +52,6 @@ dist/
 
 # dotenv environment variables file
 .env
+
+# info.txt
+info.txt
