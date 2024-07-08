@@ -6,52 +6,90 @@ body {
   justify-content: center;
   height: 100vh;
   margin: 0;
-  background-image: url('src/backgrounds/background4.png');
+  background-image: url('src/assets/backgrounds/background4.png');
   background-size: cover;
   background-position: center;
 }
 
-#welcome, #lobby, #game {
+#welcome, #lobby {
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: rgba(255, 255, 255, 0.8);
-  padding: 20px;
+  padding: 2rem;
   border-radius: 10px;
+  width: 80%;
+  max-width: 200px;
+  box-sizing: border-box;
 }
 
+/* #game {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.5rem;
+  position: relative;
+  width: 60%;
+  max-width: 600px;
+  box-sizing: border-box;
+} */
+
 button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  font-size: 16px;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
   cursor: pointer;
 }
 
-#player-name-input {
-  margin-top: 10px;
-  padding: 10px;
-  font-size: 16px;
+#enter-lobby-button, #create-room-button, #disconnect-button {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  max-width: 200px;
+  box-sizing: border-box;
 }
 
-#game-container, #player-list {
-  margin-top: 20px;
+#player-name-input {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 300px;
+  box-sizing: border-box;
+}
+
+#disconnect-button {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  width: auto;
+  max-width: none;
+}
+
+#game-container {
+  margin-top: 1rem;
+  width: 100%;
 }
 
 .room-item {
-  margin-top: 5px;
-  padding: 10px;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
   background-color: #f0f0f0;
   cursor: pointer;
   display: flex;
   align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .room-item .dot {
-  height: 15px;
-  width: 15px;
+  height: 1rem;
+  width: 1rem;
   border-radius: 50%;
   display: inline-block;
-  margin-right: 10px;
+  margin-right: 0.5rem;
 }
 
 .room-item .dot.green {
@@ -63,15 +101,16 @@ button {
 }
 
 #player-list {
-  margin-top: 20px;
+  margin-top: 1rem;
 }
 
 /* Chat box styles */
 .chatBoxWrapper {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 300px;
+  bottom: 1rem;
+  right: 1rem;
+  width: 90%;
+  max-width: 300px;
 }
 
 .chat-box {
@@ -79,11 +118,12 @@ button {
   border: 1px solid #ccc;
   border-radius: 5px;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .chat-head {
   background-color: rgba(255, 255, 255, 0.8);
-  padding: 10px;
+  padding: 0.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -91,40 +131,49 @@ button {
 }
 
 .chat-body {
-  max-height: 150px;
+  max-height: 100px; /* Adjusted height */
   overflow-y: auto;
-  display: none;
+  display: none; /* Initially hidden */
 }
 
 .msg-insert {
-  padding: 10px;
+  padding: 0.5rem;
 }
 
 .msg-send {
   background-color: #dcf8c6;
-  padding: 5px 10px;
-  margin-bottom: 5px;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
   border-radius: 5px;
   text-align: right;
 }
 
 .msg-receive {
   background-color: #ebebeb;
-  padding: 5px 10px;
-  margin-bottom: 5px;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
   border-radius: 5px;
   text-align: left;
 }
 
 .chat-text {
-  padding: 10px;
-  display: none;
+  padding: 0.5rem;
+  display: none; /* Initially hidden */
+  display: flex;
+  align-items: center;
 }
 
 .chat-text input {
   width: 100%;
-  padding: 10px;
+  padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box;
+}
+
+.send-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 0.5rem;
 }

@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const chatText = document.createElement('div');
   chatText.className = 'chat-text';
+  chatText.style.display = 'none'; // Initially hidden
   chatBox.appendChild(chatText);
 
   const chatInput = document.createElement('input');
@@ -128,15 +129,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function leaveRoom() {
     if (socket) {
+      socket.emit('leaveRoom', roomName); // Notify the server that the user is leaving the room
       socket.disconnect();
       socket = null;
       document.getElementById('lobby').style.display = 'block';
       document.getElementById('game').style.display = 'none';
       chatBoxWrapper.style.display = 'none'; // Hide chat box
+      clearChatMessages(); // Clear chat messages
       roomName = '';
       initializeSocket();
       socket.emit('playerName', playerName); // Re-emit player name to update lobby info
     }
+  }
+
+  function clearChatMessages() {
+    msgInsert.innerHTML = ''; // Clear all chat messages
   }
 
   function enterLobbyHandler() {
@@ -159,8 +166,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function joinRoom(roomName) {
     document.getElementById('lobby').style.display = 'none';
     document.getElementById('game').style.display = 'block';
-    document.getElementById('room-name-header').textContent = `Room: ${roomName}`;
+    // document.getElementById('room-name-header').textContent = `Room: ${roomName}`;
     chatBoxWrapper.style.display = 'block'; // Show chat box
+    clearChatMessages(); // Clear chat messages when joining a new room
 
     socket.on('gameUpdate', (gameState) => {
       updateGameUI(gameState);
@@ -186,7 +194,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function fetchRoomList() {
-    // Temporary socket connection to fetch room list
     const serverIp = '192.168.31.128'; // Replace with current server IP address
     const tempSocket = io(`http://${serverIp}:5000`);
     tempSocket.on('lobbyInfo', (lobbyInfo) => {
