@@ -2,7 +2,7 @@ const express = require("express");
 const cluster = require("cluster");
 const farmhash = require("farmhash");
 
-const port = 8080;
+const port = 3000;
 const num_processes = require("os").cpus().length;
 
 if (cluster.isMaster) {
