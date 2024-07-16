@@ -5,7 +5,7 @@
   "main": "server/server.js",
   "scripts": {
     "start": "node checkPort.js",
-    "client": "live-server client --port=5001",
+    "client": "live-server client --port=5001 --host=0.0.0.0",
     "dev": "concurrently \"npm run start\" \"npm run client\""
   },
   "dependencies": {
