@@ -1,3 +1,5 @@
+// server.js
+
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
@@ -13,14 +15,13 @@ const io = socketIo(server, {
   }
 });
 
-// Use CORS middleware
 app.use(cors());
 
-// Track rooms and players
 const rooms = {};
 const playersInLobby = new Set();
-
 const MAX_PLAYERS = parseInt(process.env.MAX_PLAYERS, 10) || 3;
+const cardDecks = ['_G.png', '_R.png', '_B.png']; // Simplified deck
+const ENABLE_SERVER_MESSAGES = false; // debug server messages in ChatBox
 
 io.on('connection', (socket) => {
   console.log('A player connected:', socket.id);
@@ -31,14 +32,14 @@ io.on('connection', (socket) => {
     broadcastLobbyInfo();
   });
 
-  // Handle room creation
   socket.on('createRoom', ({ roomName, password }) => {
     if (!rooms[roomName]) {
       rooms[roomName] = {
         players: [],
         password: password,
         gameState: {},
-        messages: [] // Add messages array to each room
+        messages: [],
+        readyPlayers: new Set()
       };
       console.log(`Room created: ${roomName}`);
       socket.emit('roomCreated', { success: true, roomName });
@@ -48,7 +49,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle joining a room
   socket.on('joinRoom', ({ roomName, password }) => {
     const room = rooms[roomName];
     if (room) {
@@ -66,18 +66,25 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle player making a move
+  socket.on('playerReady', (roomName) => {
+    const room = rooms[roomName];
+    if (room) {
+      room.readyPlayers.add(socket.id);
+      io.to(roomName).emit('playerReady', room.readyPlayers.size);
+      if (room.readyPlayers.size === MAX_PLAYERS) {
+        dealCards(roomName);
+      }
+    }
+  });
+
   socket.on('makeMove', ({ roomName, card }) => {
     const room = rooms[roomName];
     if (room) {
       // Validate the move and update the game state accordingly
-
-      // Broadcast the updated game state to all players in the room
       io.to(roomName).emit('gameUpdate', room.gameState);
     }
   });
 
-  // Handle player disconnection
   socket.on('disconnect', () => {
     if (socket.playerName) {
       playersInLobby.delete(socket.playerName);
@@ -87,12 +94,19 @@ io.on('connection', (socket) => {
       const index = room.players.findIndex(player => player.id === socket.id);
       if (index !== -1) {
         room.players.splice(index, 1);
+        room.readyPlayers.delete(socket.id);
         io.to(roomName).emit('playerList', room.players);
+        if (ENABLE_SERVER_MESSAGES) {
+          io.to(roomName).emit('message', { user: 'Server', text: `${socket.playerName} has left the room.` });
+        }
         console.log(`A player disconnected from room: ${roomName}`);
         if (room.players.length === 0) {
           delete rooms[roomName];
           io.emit('roomList', Object.keys(rooms));
           console.log(`Room deleted: ${roomName}`);
+        } else {
+          resetReadyState(roomName);
+          io.to(roomName).emit('roomState', 'Waiting for players...');
         }
         break;
       }
@@ -103,18 +117,40 @@ io.on('connection', (socket) => {
 
   function joinRoom(socket, roomName, playerName) {
     const room = rooms[roomName];
-    const player = {
-      id: socket.id,
-      name: playerName
-    };
+    const player = { id: socket.id, name: playerName };
     room.players.push(player);
     socket.join(roomName);
     playersInLobby.delete(playerName);
     socket.emit('joinRoom', { success: true, roomName, messages: room.messages });
     io.to(roomName).emit('playerList', room.players);
+    if (ENABLE_SERVER_MESSAGES) {
+      io.to(roomName).emit('message', { user: 'Server', text: `${playerName} has joined the room.` });
+    }
     console.log(`Player ${playerName} joined room: ${roomName}`);
     broadcastLobbyInfo();
     logRoomStatus();
+    checkRoomFull(roomName);
+  }
+
+  function checkRoomFull(roomName) {
+    const room = rooms[roomName];
+    if (room.players.length === MAX_PLAYERS) {
+      io.to(roomName).emit('roomFull');
+    }
+  }
+
+  function resetReadyState(roomName) {
+    const room = rooms[roomName];
+    room.readyPlayers.clear();
+  }
+
+  function dealCards(roomName) {
+    const room = rooms[roomName];
+    room.players.forEach((player, index) => {
+      io.to(player.id).emit('dealCards', {
+        hand: Array(7).fill(cardDecks[index]) // Each player gets seven cards of one type
+      });
+    });
   }
 
   function broadcastLobbyInfo() {
@@ -130,14 +166,12 @@ io.on('connection', (socket) => {
     io.emit('lobbyInfo', lobbyInfo);
   }
 
-  // Handle receiving a message
   socket.on('sendMessage', ({ roomName, message }) => {
     const room = rooms[roomName];
     if (room) {
       const chatMessage = { user: socket.playerName, text: message };
       room.messages.push(chatMessage);
 
-      // Keep only the last 10 messages
       if (room.messages.length > 10) {
         room.messages.shift();
       }
@@ -152,7 +186,6 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// Function to log the status of rooms
 function logRoomStatus() {
   console.log(`Current rooms: ${JSON.stringify(rooms, null, 2)}`);
 }

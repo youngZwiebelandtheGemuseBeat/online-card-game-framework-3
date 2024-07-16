@@ -1,6 +1,9 @@
+// client.js
+
 let socket;
 let playerName = sessionStorage.getItem('playerName') || '';
 let roomName = '';
+const enableServerMessages = false; // debug server messages in ChatBox
 
 document.addEventListener("DOMContentLoaded", () => {
   const enterLobbyButton = document.getElementById('enter-lobby-button');
@@ -9,10 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const disconnectButton = document.getElementById('disconnect-button');
   const roomListContainer = document.getElementById('room-list');
 
-  // Chat elements
   const chatBoxWrapper = document.createElement('div');
   chatBoxWrapper.className = 'chatBoxWrapper';
-  chatBoxWrapper.style.display = 'none'; // Initially hidden
+  chatBoxWrapper.style.display = 'none';
   document.body.appendChild(chatBoxWrapper);
 
   const chatBox = document.createElement('div');
@@ -34,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const chatBody = document.createElement('div');
   chatBody.className = 'chat-body';
-  chatBody.style.display = 'none'; // Initially hidden
+  chatBody.style.display = 'none';
   chatBox.appendChild(chatBody);
 
   const msgInsert = document.createElement('div');
@@ -43,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const chatText = document.createElement('div');
   chatText.className = 'chat-text';
-  chatText.style.display = 'none'; // Initially hidden
+  chatText.style.display = 'none';
   chatBox.appendChild(chatText);
 
   const chatInput = document.createElement('input');
@@ -51,7 +53,6 @@ document.addEventListener("DOMContentLoaded", () => {
   chatInput.placeholder = 'Type a message...';
   chatText.appendChild(chatInput);
 
-  // Show welcome page if playerName is not already set
   if (!playerName) {
     document.getElementById('welcome').style.display = 'block';
   } else {
@@ -122,28 +123,28 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener('beforeunload', (event) => {
     if (socket && roomName) {
       const confirmationMessage = 'Are you sure you want to leave the game?';
-      event.returnValue = confirmationMessage; // Standard for most browsers
-      return confirmationMessage; // For some older browsers
+      event.returnValue = confirmationMessage;
+      return confirmationMessage;
     }
   });
 
   function leaveRoom() {
     if (socket) {
-      socket.emit('leaveRoom', roomName); // Notify the server that the user is leaving the room
+      socket.emit('leaveRoom', roomName);
       socket.disconnect();
       socket = null;
       document.getElementById('lobby').style.display = 'block';
       document.getElementById('game').style.display = 'none';
-      chatBoxWrapper.style.display = 'none'; // Hide chat box
-      clearChatMessages(); // Clear chat messages
+      chatBoxWrapper.style.display = 'none';
+      clearChatMessages();
       roomName = '';
       initializeSocket();
-      socket.emit('playerName', playerName); // Re-emit player name to update lobby info
+      socket.emit('playerName', playerName);
     }
   }
 
   function clearChatMessages() {
-    msgInsert.innerHTML = ''; // Clear all chat messages
+    msgInsert.innerHTML = '';
   }
 
   function enterLobbyHandler() {
@@ -166,9 +167,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function joinRoom(roomName) {
     document.getElementById('lobby').style.display = 'none';
     document.getElementById('game').style.display = 'block';
-    // document.getElementById('room-name-header').textContent = `Room: ${roomName}`;
-    chatBoxWrapper.style.display = 'block'; // Show chat box
-    clearChatMessages(); // Clear chat messages when joining a new room
+    chatBoxWrapper.style.display = 'block';
+    clearChatMessages();
+
+    const gameContainer = document.getElementById('game-container');
+    gameContainer.innerHTML = '<h2>Waiting for players...</h2>';
 
     socket.on('gameUpdate', (gameState) => {
       updateGameUI(gameState);
@@ -176,16 +179,76 @@ document.addEventListener("DOMContentLoaded", () => {
 
     socket.on('playerList', (players) => {
       updatePlayerList(players);
+      const initialMessage = 'Players in Room: ' + players.map(player => player.name === playerName ? `${player.name} (You)` : player.name).join(', ');
+      if (enableServerMessages) {
+        appendMessage({ user: 'Server', text: initialMessage });
+      }
     });
 
     socket.on('message', (message) => {
-      appendMessage(message);
+      if (enableServerMessages || message.user !== 'Server') {
+        appendMessage(message);
+      }
     });
+
+    socket.on('roomFull', () => {
+      gameContainer.innerHTML = '<h2>Room is full. Waiting for all players to be ready...</h2>';
+      createReadyButton(gameContainer);
+    });
+
+    socket.on('playerReady', (readyCount) => {
+      if (readyCount === MAX_PLAYERS) {
+        gameContainer.innerHTML = '';
+      }
+    });
+
+    socket.on('dealCards', ({ hand }) => {
+      gameContainer.innerHTML = '';
+
+      const playerCardsContainer = document.createElement('div');
+      playerCardsContainer.id = 'player-cards-container';
+
+      hand.forEach(card => {
+        const cardElement = document.createElement('img');
+        cardElement.src = `src/assets/cards-front/${card}`;
+        cardElement.classList.add('card');
+        playerCardsContainer.appendChild(cardElement);
+      });
+
+      gameContainer.appendChild(playerCardsContainer);
+
+      const leftStackContainer = document.createElement('div');
+      leftStackContainer.id = 'left-stack-container';
+      generateCardBacks(7).forEach(card => leftStackContainer.appendChild(card));
+      gameContainer.appendChild(leftStackContainer);
+
+      const rightStackContainer = document.createElement('div');
+      rightStackContainer.id = 'right-stack-container';
+      generateCardBacks(7).forEach(card => rightStackContainer.appendChild(card));
+      gameContainer.appendChild(rightStackContainer);
+    });
+
+    socket.on('roomState', (state) => {
+      gameContainer.innerHTML = `<h2>${state}</h2>`;
+    });
+  }
+
+  function createReadyButton(container) {
+    const readyButton = document.createElement('button');
+    readyButton.id = 'ready-button';
+    readyButton.textContent = 'Ready';
+    readyButton.classList.add('ready-button');
+    readyButton.addEventListener('click', () => {
+      socket.emit('playerReady', roomName);
+      readyButton.disabled = true;
+      readyButton.textContent = 'Waiting for others...';
+    });
+    container.appendChild(readyButton);
   }
 
   function initializeSocket() {
     if (!socket) {
-      const serverIp = '10.0.0.80'; // Replace with current server IP address
+      const serverIp = '10.0.0.80';
       socket = io(`http://${serverIp}:5000`);
       socket.on('lobbyInfo', (lobbyInfo) => {
         updateLobbyInfo(lobbyInfo);
@@ -194,11 +257,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function fetchRoomList() {
-    const serverIp = '10.0.0.80'; // Replace with current server IP address
+    const serverIp = '10.0.0.80';
     const tempSocket = io(`http://${serverIp}:5000`);
     tempSocket.on('lobbyInfo', (lobbyInfo) => {
       updateLobbyInfo(lobbyInfo);
-      tempSocket.disconnect(); // Disconnect after fetching the lobby info
+      tempSocket.disconnect();
     });
   }
 
@@ -214,11 +277,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (chatBody.style.display === 'none') {
       chatBody.style.display = 'block';
       toggleChatBox.textContent = 'keyboard_arrow_down';
-      chatText.style.display = 'block'; // Show input when open
+      chatText.style.display = 'block';
     } else {
       chatBody.style.display = 'none';
       toggleChatBox.textContent = 'keyboard_arrow_up';
-      chatText.style.display = 'none'; // Hide input when closed
+      chatText.style.display = 'none';
     }
   });
 
@@ -276,4 +339,15 @@ function updateGameUI(gameState) {
 function updatePlayerList(players) {
   const playerListContainer = document.getElementById('player-list');
   playerListContainer.innerHTML = 'Players in Room: ' + players.map(player => player.name === playerName ? `${player.name} (You)` : player.name).join(', ');
+}
+
+function generateCardBacks(count) {
+  const cards = [];
+  for (let i = 0; i < count; i++) {
+    const card = document.createElement('img');
+    card.src = 'src/assets/card-back.png';
+    card.classList.add('card');
+    cards.push(card);
+  }
+  return cards;
 }

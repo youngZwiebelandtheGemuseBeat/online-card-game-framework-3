@@ -101,7 +101,11 @@ button {
 }
 
 #player-list {
-  margin-top: 1rem;
+  position: fixed;
+  top: 2rem;
+  right: 1rem;
+  width: 90%;
+  max-width: 300px;
 }
 
 /* Chat box styles */
@@ -246,4 +250,19 @@ button {
 /* Rotate the cards in the right stack by -90 degrees */
 #right-stack-container .card {
   transform: rotate(-90deg);
+}
+
+.ready-button {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.ready-button:disabled {
+  background-color: #d3d3d3;
+  cursor: not-allowed;
 }
