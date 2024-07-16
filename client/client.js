@@ -210,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       hand.forEach(card => {
         const cardElement = document.createElement('img');
-        cardElement.src = `src/assets/cards-front/${card}`;
+        cardElement.src = `src/assets/cards-front/${card}.png`;
         cardElement.classList.add('card');
         playerCardsContainer.appendChild(cardElement);
       });
@@ -226,6 +226,15 @@ document.addEventListener("DOMContentLoaded", () => {
       rightStackContainer.id = 'right-stack-container';
       generateCardBacks(7).forEach(card => rightStackContainer.appendChild(card));
       gameContainer.appendChild(rightStackContainer);
+
+      // Display the remaining deck in the upper middle of the screen
+      const deckContainer = document.createElement('div');
+      deckContainer.id = 'deck-container';
+      const deckImage = document.createElement('img');
+      deckImage.src = 'src/assets/card-back.png';
+      deckImage.classList.add('card');
+      deckContainer.appendChild(deckImage);
+      gameContainer.appendChild(deckContainer);
     });
 
     socket.on('roomState', (state) => {

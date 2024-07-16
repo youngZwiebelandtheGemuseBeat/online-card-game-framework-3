@@ -5,6 +5,8 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
+const shuffleArray = require('../client/src/utils/shuffleArray');
+const packOfCards = require('../client/src/utils/packOfCards');
 
 const app = express();
 const server = http.createServer(app);
@@ -20,8 +22,7 @@ app.use(cors());
 const rooms = {};
 const playersInLobby = new Set();
 const MAX_PLAYERS = parseInt(process.env.MAX_PLAYERS, 10) || 3;
-const cardDecks = ['_G.png', '_R.png', '_B.png']; // Simplified deck
-const ENABLE_SERVER_MESSAGES = false; // debug server messages in ChatBox
+const ENABLE_SERVER_MESSAGES = true; // Set to false to disable server messages
 
 io.on('connection', (socket) => {
   console.log('A player connected:', socket.id);
@@ -39,7 +40,8 @@ io.on('connection', (socket) => {
         password: password,
         gameState: {},
         messages: [],
-        readyPlayers: new Set()
+        readyPlayers: new Set(),
+        deck: shuffleArray([...packOfCards]) // Initialize and shuffle the deck
       };
       console.log(`Room created: ${roomName}`);
       socket.emit('roomCreated', { success: true, roomName });
@@ -146,10 +148,9 @@ io.on('connection', (socket) => {
 
   function dealCards(roomName) {
     const room = rooms[roomName];
-    room.players.forEach((player, index) => {
-      io.to(player.id).emit('dealCards', {
-        hand: Array(7).fill(cardDecks[index]) // Each player gets seven cards of one type
-      });
+    room.players.forEach(player => {
+      const hand = room.deck.splice(0, 7);
+      io.to(player.id).emit('dealCards', { hand });
     });
   }
 
